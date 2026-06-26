@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Component;
 
+import com.app.personalfinanacetracker.dto.SummaryDTO;
 import com.app.personalfinanacetracker.entity.Budget;
 import com.app.personalfinanacetracker.entity.Expense;
 import com.app.personalfinanacetracker.repository.ExpenseRepository;
@@ -14,7 +15,7 @@ import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
-public class BudgetCalculator {
+public class Calculator {
     //Data access layer for expense
     private final ExpenseRepository repository;
 
@@ -117,5 +118,26 @@ public class BudgetCalculator {
                         .add(b.getMedical())
                         .add(b.getMisc())
                 );
+    }
+
+    public void calculateYearlyBudget(SummaryDTO dto, Budget b) {
+        //Calculate total budget for the current year
+        dto.setIncome(dto.getIncome().add(b.getIncome()));
+        dto.setRetirement(dto.getRetirement().add(b.getRetirement()));
+        dto.setInsurance(dto.getInsurance().add(b.getInsurance()));
+        dto.setMobilePhone(dto.getMobilePhone().add(b.getMobilePhone()));
+        dto.setInternet(dto.getInternet().add(b.getInternet()));
+        dto.setUtilities(dto.getUtilities().add(b.getUtilities()));
+        dto.setTax(dto.getTax().add(b.getTax()));
+        dto.setMortgage(dto.getMortgage().add(b.getMortgage()));
+        dto.setDebt(dto.getDebt().add(b.getDebt()));
+        dto.setAllowancesForParents(dto.getAllowancesForParents().add(b.getAllowancesForParents()));
+        dto.setTransport(dto.getTransport().add(b.getTransport()));
+        dto.setFood(dto.getFood().add(b.getFood()));
+        dto.setGroceries(dto.getGroceries().add(b.getGroceries()));
+        dto.setHaircut(dto.getHaircut().add(b.getHaircut()));
+        dto.setMedical(dto.getMedical().add(b.getMedical()));
+        dto.setMisc(dto.getMisc().add(b.getMisc()));
+        dto.setSavings(dto.getSavings().add(b.getSavings()));        
     }
 }

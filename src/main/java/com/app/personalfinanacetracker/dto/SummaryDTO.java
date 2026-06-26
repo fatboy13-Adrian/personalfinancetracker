@@ -12,9 +12,6 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SummaryDTO {
-    //Unique identifier for each record
-    private Long id;
-
     //Year of record
     private int year;
 

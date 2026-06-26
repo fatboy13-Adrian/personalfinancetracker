@@ -1,4 +1,5 @@
 package com.app.personalfinanacetracker.entity;
+
 import java.math.BigDecimal;
 import java.time.YearMonth;
 
@@ -15,23 +16,23 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "budget")
+@Table(name = "budgets")
 @Getter
 @Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class Budget {
-//Unique identifier for each record
+    // Unique identifier for each record
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    //Month of record
+    // Month of record
     @Column(nullable = false, unique = true, length = 7)
     private YearMonth month;
 
-    //Set default value using lombok builder & set column with 2 decimal places
+    // Set default value using lombok builder & set column with 2 decimal places
     @Builder.Default
     @Column(precision = 10, scale = 2)
     private BigDecimal income = BigDecimal.ZERO;

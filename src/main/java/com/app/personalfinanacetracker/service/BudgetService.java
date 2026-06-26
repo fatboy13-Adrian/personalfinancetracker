@@ -3,12 +3,14 @@ package com.app.personalfinanacetracker.service;
 import java.time.LocalDate;
 import java.time.Year;
 import java.time.YearMonth;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import com.app.personalfinanacetracker.calculator.BudgetCalculator;
+import com.app.personalfinanacetracker.calculator.Calculator;
 import com.app.personalfinanacetracker.dto.BudgetDTO;
+import com.app.personalfinanacetracker.dto.SummaryDTO;
 import com.app.personalfinanacetracker.entity.Budget;
 import com.app.personalfinanacetracker.exception.budget.MonthAlreadyExistsException;
 import com.app.personalfinanacetracker.exception.budget.MonthNotFoundException;
@@ -23,7 +25,7 @@ import lombok.RequiredArgsConstructor;
 public class BudgetService {
     private final BudgetMapper mapper;
     private final BudgetRepository repository;
-    private final BudgetCalculator calculator;
+    private final Calculator calculator;
 
     @Transactional
     public BudgetDTO addBudget(BudgetDTO dto) {
@@ -59,6 +61,42 @@ public class BudgetService {
 
         //Convert & return DTO
         return mapper.toDTO(b);
+    }
+
+    public List <SummaryDTO> retrieveSummaries() {
+        //Retrieve all budget records
+        List<Budget> budgets = repository.findAll();
+
+        //Store yearly summaries
+        List<SummaryDTO> summaries = new ArrayList<>();
+
+        //Iterate through all records
+        for (Budget b : budgets) {
+            int year = b.getMonth().getYear();
+
+            //Find existing summary for year
+            SummaryDTO existing = null;
+
+            for (SummaryDTO dto : summaries) {
+                if (dto.getYear() == year) {
+                    existing = dto;
+                    break;
+                }
+            }
+
+            //If not found, create new DTO
+            if (existing == null) {
+                existing = new SummaryDTO();
+                existing.setYear(year);
+                summaries.add(existing);
+            }
+
+            //Accumulate values
+            calculator.calculateYearlyBudget(existing, b);
+        }
+
+        //Return summaries
+        return summaries;
     }
 
     @Transactional

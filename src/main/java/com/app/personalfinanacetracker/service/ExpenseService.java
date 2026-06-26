@@ -21,7 +21,7 @@ public class ExpenseService {
     private final BudgetService budgetSvc;
 
     //Mapper class for conversion between entity to dto
-    private ExpenseMapper mapper;
+    private final ExpenseMapper mapper;
 
     @Transactional
     public ExpenseDTO addExpense(ExpenseDTO dto) {

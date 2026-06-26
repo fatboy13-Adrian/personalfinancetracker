@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.app.personalfinanacetracker.dto.BudgetDTO;
+import com.app.personalfinanacetracker.dto.SummaryDTO;
 import com.app.personalfinanacetracker.service.BudgetService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -54,6 +55,14 @@ public class BudgetController {
         record by month & returns HTTP 200 OK with 
         the record info**/
 		return ResponseEntity.ok(svc.findBudgetByMonth(month));
+	}
+
+	@GetMapping("/summaries")
+	@Operation(summary = "Retrieve all yearly summary records")
+	public ResponseEntity<List<SummaryDTO>> retrieveSummaries() {
+		/**Calls the service layer to fetch all summary records 
+        & returns HTTP 200 OK with the record info**/
+		return ResponseEntity.ok(svc.retrieveSummaries());
 	}
 
     @PutMapping("month/{month}")
