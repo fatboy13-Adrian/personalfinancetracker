@@ -1,7 +1,7 @@
 package com.app.personalfinanacetracker.service;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.Year;
 import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.List;
@@ -9,6 +9,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import com.app.personalfinanacetracker.calculator.Calculator;
+import com.app.personalfinanacetracker.dto.AverageDTO;
 import com.app.personalfinanacetracker.dto.BudgetDTO;
 import com.app.personalfinanacetracker.dto.SummaryDTO;
 import com.app.personalfinanacetracker.entity.Budget;
@@ -28,7 +29,7 @@ public class BudgetService {
     private final Calculator calculator;
 
     @Transactional
-    public BudgetDTO addBudget(BudgetDTO dto) {
+    public BudgetDTO createBudget(BudgetDTO dto) {
         //Checks if month already exists
         if (repository.findByMonth(dto.getMonth()).isPresent()) 
             throw new MonthAlreadyExistsException(dto.getMonth());
@@ -37,7 +38,7 @@ public class BudgetService {
         Budget b = new Budget();
 
         //Copy user input fields
-        addBudgetFields(b, dto);
+        createOrUpdateBudgetFields(b, dto);
 
         //Auto recalculate expense breakdown snapshot
         calculator.calculateMonthlyExpenses(b);
@@ -49,21 +50,21 @@ public class BudgetService {
         return mapper.toDTO(saved);
     }
 
-    public List <BudgetDTO> showAllBudgets() {
+    public List <BudgetDTO> retrieveBudgets() {
         return repository.findAll()
         .stream().map(mapper::toDTO)
         .toList();
     }
 
-    public BudgetDTO findBudgetByMonth(YearMonth month) {
+    public BudgetDTO retrieveBudgetByMonth(YearMonth month) {
         //Fetch budget or throw exception
-        Budget b = findBudget(month);
+        Budget b = findMonth(month);
 
         //Convert & return DTO
         return mapper.toDTO(b);
     }
 
-    public List <SummaryDTO> retrieveSummaries() {
+    public List <SummaryDTO> retrieveBudgetsByYear() {
         //Retrieve all budget records
         List<Budget> budgets = repository.findAll();
 
@@ -99,28 +100,61 @@ public class BudgetService {
         return summaries;
     }
 
+    public List <AverageDTO> retrieveAverageBudget() {
+        List<Budget> budgets = repository.findAll();
+        List <AverageDTO> average = new ArrayList<>();
+        if (budgets == null || budgets.isEmpty()) return average;
+        
+        AverageDTO totals = new AverageDTO();
+        initializeAverageFieldsToZero(totals);
+
+        for (Budget b : budgets) {
+            totals.setIncome(totals.getIncome().add(b.getIncome()));
+            totals.setRetirement(totals.getRetirement().add(b.getRetirement()));
+            totals.setInsurance(totals.getInsurance().add(b.getInsurance()));
+            totals.setMobilePhone(totals.getMobilePhone().add(b.getMobilePhone()));
+            totals.setInternet(totals.getInternet().add(b.getInternet()));
+            totals.setUtilities(totals.getUtilities().add(b.getUtilities()));
+            totals.setTax(totals.getTax().add(b.getTax()));
+            totals.setMortgage(totals.getMortgage().add(b.getMortgage()));
+            totals.setDebt(totals.getDebt().add(b.getDebt()));
+            totals.setAllowancesForParents(totals.getAllowancesForParents().add(b.getAllowancesForParents()));
+            totals.setTransport(totals.getTransport().add(b.getTransport()));
+            totals.setFood(totals.getFood().add(b.getFood()));
+            totals.setGroceries(totals.getGroceries().add(b.getGroceries()));
+            totals.setHaircut(totals.getHaircut().add(b.getHaircut()));
+            totals.setMedical(totals.getMedical().add(b.getMedical()));
+            totals.setMisc(totals.getMisc().add(b.getMisc()));
+            totals.setSavings(totals.getSavings().add(b.getSavings()));
+        }
+
+        calculator.calculateAverageBudget(totals);
+        average.add(totals);
+        return average;
+    }
+
     @Transactional
     public BudgetDTO updateBudgetByMonth(YearMonth month, BudgetDTO dto) {
-        Budget existing = findBudget(month);
+        Budget existing = findMonth(month);
 
         //Prevent duplicate month conflict when changing month
         if (!month.equals(dto.getMonth()) && repository.findByMonth(dto.getMonth()).isPresent()) 
             throw new MonthAlreadyExistsException(dto.getMonth());
 
-        addBudgetFields(existing, dto);
+        createOrUpdateBudgetFields(existing, dto);
         calculator.calculateMonthlyExpenses(existing);
         Budget updated = repository.save(existing);
         return mapper.toDTO(updated);
     }
 
-    private void addBudgetFields(Budget b, BudgetDTO dto) {
+    private void createOrUpdateBudgetFields(Budget b, BudgetDTO dto) {
         //Set month, income & retirement
         b.setMonth(dto.getMonth());
         b.setIncome(dto.getIncome());
         b.setRetirement(dto.getRetirement());
     }
 
-    private Budget findBudget(YearMonth month) {
+    private Budget findMonth(YearMonth month) {
         //Fetch budget or throw exception if not found
         return repository.findByMonth(month)
         .orElseThrow(() -> new MonthNotFoundException(month));
@@ -148,16 +182,23 @@ public class BudgetService {
         repository.save(b);
     }
 
-    public List <Budget> getYearlyBudgets(Year year) {
-        //Find by year or throw exception if not found
-		if (year == null) 
-            throw new IllegalArgumentException("Year cannot be null");
-        
-        //Jan to Dec
-		YearMonth start = YearMonth.of(year.getValue(), 1);
-		YearMonth end = YearMonth.of(year.getValue(), 12);
-
-        //Fetch year range
-		return repository.findByMonthBetween(start, end);
-	}
+    private void initializeAverageFieldsToZero(AverageDTO dto) {
+        dto.setIncome(BigDecimal.ZERO);
+        dto.setRetirement(BigDecimal.ZERO);
+        dto.setInsurance(BigDecimal.ZERO);
+        dto.setMobilePhone(BigDecimal.ZERO);
+        dto.setInternet(BigDecimal.ZERO);
+        dto.setUtilities(BigDecimal.ZERO);
+        dto.setTax(BigDecimal.ZERO);
+        dto.setMortgage(BigDecimal.ZERO);
+        dto.setDebt(BigDecimal.ZERO);
+        dto.setAllowancesForParents(BigDecimal.ZERO);
+        dto.setTransport(BigDecimal.ZERO);
+        dto.setFood(BigDecimal.ZERO);
+        dto.setGroceries(BigDecimal.ZERO);
+        dto.setHaircut(BigDecimal.ZERO);
+        dto.setMedical(BigDecimal.ZERO);
+        dto.setMisc(BigDecimal.ZERO);
+        dto.setSavings(BigDecimal.ZERO);
+    }
 }

@@ -24,7 +24,7 @@ public class ExpenseService {
     private final ExpenseMapper mapper;
 
     @Transactional
-    public ExpenseDTO addExpense(ExpenseDTO dto) {
+    public ExpenseDTO createExpense(ExpenseDTO dto) {
         //Checks if date already exists
         repository.findByDate(dto.getDate()).ifPresent(existing -> {
             throw new DateAlreadyExistsException(dto.getDate());
@@ -43,13 +43,13 @@ public class ExpenseService {
         return mapper.toDTO(saved);
     }
 
-    public List <ExpenseDTO> showAllExpenses() {
+    public List <ExpenseDTO> retrieveExpenses() {
         return repository.findAll()
         .stream().map(mapper::toDTO)
         .toList();
     }
 
-    public ExpenseDTO findExpenseByDate(LocalDate date) {
+    public ExpenseDTO retrieveExpenseByDate(LocalDate date) {
         //Fetch expense by date or throw exception
         Expense e = repository.findByDate(date)
         .orElseThrow(() -> new DateNotFoundException(date));

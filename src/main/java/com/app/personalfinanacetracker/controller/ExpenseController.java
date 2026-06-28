@@ -31,30 +31,30 @@ public class ExpenseController {
 
     @PostMapping("/addExpense")
 	@Operation(summary = "Add a new expense record")
-	public ResponseEntity<ExpenseDTO> addExpense(@RequestBody ExpenseDTO dto) {
+	public ResponseEntity<ExpenseDTO> createExpense(@RequestBody ExpenseDTO dto) {
 		/**Calls the service layer to add a new record & 
         returns HTTP 200 OK with the added record in the
         response body**/
-		return ResponseEntity.ok(svc.addExpense(dto));
+		return ResponseEntity.ok(svc.createExpense(dto));
 	}
 
     @GetMapping
-	@Operation(summary = "Show all expense records")
-	public ResponseEntity<List<ExpenseDTO>> showAllExpenses() {
+	@Operation(summary = "Retrieve all expense records")
+	public ResponseEntity<List<ExpenseDTO>> retrieveExpenses() {
 		/**Calls the service layer to fetch all 
         records & returns HTTP 200 OK with the 
         list of records**/
-		return ResponseEntity.ok(svc.showAllExpenses());
+		return ResponseEntity.ok(svc.retrieveExpenses());
 	}
 
     @GetMapping("/date/{date}")
-	@Operation(summary = "Show expense record by date")
-	public ResponseEntity<ExpenseDTO> findExpenseByDate(@PathVariable
+	@Operation(summary = "Retrieve expense record by date")
+	public ResponseEntity<ExpenseDTO> retrieveExpenseByDate(@PathVariable
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
 		/**Calls the service layer to fetch the record 
         by date & returns HTTP 200 OK with the 
         record info**/
-		ExpenseDTO dto = svc.findExpenseByDate(date);
+		ExpenseDTO dto = svc.retrieveExpenseByDate(date);
 		return ResponseEntity.ok(dto);
 	}
 

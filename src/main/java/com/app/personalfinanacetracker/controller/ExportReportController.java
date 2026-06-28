@@ -50,7 +50,7 @@ public class ExportReportController {
         /**Generate excel file from export summary 
         report service & wrap it as input 
         stream resource**/
-		ByteArrayInputStream file = svc.exportYearlySummaries();
+		ByteArrayInputStream file = svc.exportYearlyBudgets();
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Disposition", 
         "attachment; filename= Yearly Summaries.xlsx");

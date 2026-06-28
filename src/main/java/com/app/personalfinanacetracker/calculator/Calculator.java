@@ -1,14 +1,18 @@
 package com.app.personalfinanacetracker.calculator;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.List;
 
 import org.springframework.stereotype.Component;
 
+import com.app.personalfinanacetracker.dto.AverageDTO;
 import com.app.personalfinanacetracker.dto.SummaryDTO;
 import com.app.personalfinanacetracker.entity.Budget;
 import com.app.personalfinanacetracker.entity.Expense;
+import com.app.personalfinanacetracker.repository.BudgetRepository;
 import com.app.personalfinanacetracker.repository.ExpenseRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -17,14 +21,15 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class Calculator {
     //Data access layer for expense
-    private final ExpenseRepository repository;
+    private final ExpenseRepository expenseRepository;
+    private final BudgetRepository budgetRepository;
 
     public void calculateMonthlyExpenses(Budget b) {
         //Extract month for calculation
         YearMonth month = b.getMonth();
 
         //Find dates between 1st day to last day of the month
-        List <Expense> expenseList = repository.
+        List <Expense> expenseList = expenseRepository.
         findByDateBetween(month.atDay(1), month.atEndOfMonth());
 
         //Intialize all variables to 0.0
@@ -139,5 +144,63 @@ public class Calculator {
         dto.setMedical(dto.getMedical().add(b.getMedical()));
         dto.setMisc(dto.getMisc().add(b.getMisc()));
         dto.setSavings(dto.getSavings().add(b.getSavings()));        
+    }
+
+    public int calculateTotalNumberOfMonths() {
+        List<Budget> budgets = budgetRepository.findAll();
+        if (budgets == null || budgets.isEmpty()) return 0;
+
+        //Initial high placeholder for year comparison
+        int startYear = Integer.MAX_VALUE;
+
+        //Iterate through records to find earliest start year
+        for (Budget b : budgets) {
+            YearMonth month = b.getMonth();
+            if (month != null && month.getYear() < startYear)
+                startYear = month.getYear();
+        }
+
+        //Calculate total number of months
+        if (startYear != Integer.MAX_VALUE) {
+            int currentYear = LocalDate.now().getYear();
+
+            //Calculate previous years in full
+            int noOfYears = currentYear - startYear;
+            int noOfMonths = noOfYears * 12;
+
+            //Get total number of months for current years
+            int currentYearMonth = LocalDate.now().getMonthValue();
+
+            return noOfMonths + currentYearMonth;
+        }
+
+        return 0;
+    }
+
+    private BigDecimal calculateAverage(BigDecimal sum, int totalMonths) {
+        return sum.divide(BigDecimal.valueOf(totalMonths), 2, RoundingMode.HALF_UP);
+    }
+
+    public void calculateAverageBudget(AverageDTO dto) {
+        int totalMonths = calculateTotalNumberOfMonths();
+        if (totalMonths == 0) return;
+
+        dto.setIncome(calculateAverage(dto.getIncome(), totalMonths));
+        dto.setRetirement(calculateAverage(dto.getRetirement(), totalMonths));
+        dto.setInsurance(calculateAverage(dto.getInsurance(), totalMonths));
+        dto.setMobilePhone(calculateAverage(dto.getMobilePhone(), totalMonths));
+        dto.setInternet(calculateAverage(dto.getInternet(), totalMonths));
+        dto.setUtilities(calculateAverage(dto.getUtilities(), totalMonths));
+        dto.setTax(calculateAverage(dto.getTax(), totalMonths));
+        dto.setMortgage(calculateAverage(dto.getMortgage(), totalMonths));
+        dto.setDebt(calculateAverage(dto.getDebt(), totalMonths));
+        dto.setAllowancesForParents(calculateAverage(dto.getAllowancesForParents(), totalMonths));
+        dto.setTransport(calculateAverage(dto.getTransport(), totalMonths));
+        dto.setFood(calculateAverage(dto.getFood(), totalMonths));
+        dto.setGroceries(calculateAverage(dto.getGroceries(), totalMonths));
+        dto.setHaircut(calculateAverage(dto.getHaircut(), totalMonths));
+        dto.setMedical(calculateAverage(dto.getMedical(), totalMonths));
+        dto.setMisc(calculateAverage(dto.getMisc(), totalMonths));
+        dto.setSavings(calculateAverage(dto.getSavings(), totalMonths));        
     }
 }

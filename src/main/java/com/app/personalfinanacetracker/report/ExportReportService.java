@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.math.BigDecimal;
 import java.time.Year;
+import java.time.YearMonth;
 import java.util.List;
 
 import org.apache.poi.ss.usermodel.Cell;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Component;
 import com.app.personalfinanacetracker.dto.SummaryDTO;
 import com.app.personalfinanacetracker.entity.Budget;
 import com.app.personalfinanacetracker.exception.ExportExcelFailedException;
+import com.app.personalfinanacetracker.repository.BudgetRepository;
 import com.app.personalfinanacetracker.service.BudgetService;
 
 import lombok.RequiredArgsConstructor;
@@ -27,11 +29,25 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ExportReportService {
     private final BudgetService budgetSvc;
+    private final BudgetRepository repository;
+
+    public List <Budget> getYearlyBudgets(Year year) {
+        //Find by year or throw exception if not found
+		if (year == null) 
+            throw new IllegalArgumentException("Year cannot be null");
+        
+        //Jan to Dec
+		YearMonth start = YearMonth.of(year.getValue(), 1);
+		YearMonth end = YearMonth.of(year.getValue(), 12);
+
+        //Fetch year range
+		return repository.findByMonthBetween(start, end);
+	}
     
     //Helper method to export budget records
 	public ByteArrayInputStream exportBudgetRecords(Year year) {
 		//Retrieve all budget records
-	    List<Budget> budgets = budgetSvc.getYearlyBudgets(year);
+	    List<Budget> budgets = getYearlyBudgets(year);
 
 		//Build & return excel file as byte array input stream
 		return buildExcel(budgets, "Budget Records For Year " + year);
@@ -144,8 +160,8 @@ public class ExportReportService {
 		}
 	}
 
-	 public ByteArrayInputStream exportYearlySummaries() {
-        List <SummaryDTO> summaries = budgetSvc.retrieveSummaries();
+	 public ByteArrayInputStream exportYearlyBudgets() {
+        List <SummaryDTO> summaries = budgetSvc.retrieveBudgetsByYear();
         return buildYearlySummaryExcel(summaries);
     }
 

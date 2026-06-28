@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.app.personalfinanacetracker.dto.AverageDTO;
 import com.app.personalfinanacetracker.dto.BudgetDTO;
 import com.app.personalfinanacetracker.dto.SummaryDTO;
 import com.app.personalfinanacetracker.service.BudgetService;
@@ -31,38 +32,46 @@ public class BudgetController {
 
     @PostMapping("/addBudget")
 	@Operation(summary = "Create a new budget record")
-	public ResponseEntity<BudgetDTO> addBudget(@RequestBody BudgetDTO dto) {
+	public ResponseEntity<BudgetDTO> createBudget(@RequestBody BudgetDTO dto) {
 		/**Calls the service layer to create a 
         new budget record & returns HTTP 200 OK 
         with the created budget record in the 
         response body**/
-		return ResponseEntity.ok(svc.addBudget(dto));
+		return ResponseEntity.ok(svc.createBudget(dto));
 	}
 
     @GetMapping
-	@Operation(summary = "Show all budget records")
-	public ResponseEntity<List <BudgetDTO>> showAllBudgets() {
+	@Operation(summary = "Retrieve all budget records")
+	public ResponseEntity<List <BudgetDTO>> retrieveBudgets() {
 		/**Calls the service layer to fetch all 
         budget records &  returns HTTP 200 OK 
         with the list of records**/
-		return ResponseEntity.ok(svc.showAllBudgets());
+		return ResponseEntity.ok(svc.retrieveBudgets());
 	}
 
     @GetMapping("month/{month}")
 	@Operation(summary = "Retrieve budget record by month")
-	public ResponseEntity<BudgetDTO> findBudgetByMonth(@PathVariable YearMonth month) {
+	public ResponseEntity<BudgetDTO> retrieveBudgetByMonth(@PathVariable YearMonth month) {
 		/**Calls the service layer to fetch the budget 
         record by month & returns HTTP 200 OK with 
         the record info**/
-		return ResponseEntity.ok(svc.findBudgetByMonth(month));
+		return ResponseEntity.ok(svc.retrieveBudgetByMonth(month));
 	}
 
 	@GetMapping("/summaries")
-	@Operation(summary = "Retrieve all yearly summary records")
-	public ResponseEntity<List<SummaryDTO>> retrieveSummaries() {
-		/**Calls the service layer to fetch all summary records 
+	@Operation(summary = "Retrieve all budget records by year")
+	public ResponseEntity<List<SummaryDTO>> retrieveBudgetsByYear() {
+		/**Calls the service layer to fetch all budget records 
+        by year & returns HTTP 200 OK with the record info**/
+		return ResponseEntity.ok(svc.retrieveBudgetsByYear());
+	}
+
+	@GetMapping("/average")
+	@Operation(summary = "Retrieve average budgets")
+	public ResponseEntity<List<AverageDTO>> retrieveAverageBudget() {
+		/**Calls the service layer to fetch average budget record 
         & returns HTTP 200 OK with the record info**/
-		return ResponseEntity.ok(svc.retrieveSummaries());
+		return ResponseEntity.ok(svc.retrieveAverageBudget());
 	}
 
     @PutMapping("month/{month}")
