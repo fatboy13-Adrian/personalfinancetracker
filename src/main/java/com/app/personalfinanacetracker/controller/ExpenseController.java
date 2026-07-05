@@ -29,7 +29,7 @@ public class ExpenseController {
 	@Autowired	
 	private ExpenseService svc;
 
-    @PostMapping("/addExpense")
+    @PostMapping("/createExpense")
 	@Operation(summary = "Add a new expense record")
 	public ResponseEntity<ExpenseDTO> createExpense(@RequestBody ExpenseDTO dto) {
 		/**Calls the service layer to add a new record & 

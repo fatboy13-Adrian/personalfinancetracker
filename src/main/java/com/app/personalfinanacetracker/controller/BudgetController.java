@@ -30,7 +30,7 @@ public class BudgetController {
     @Autowired	
 	private BudgetService svc;
 
-    @PostMapping("/addBudget")
+    @PostMapping("/createBudget")
 	@Operation(summary = "Create a new budget record")
 	public ResponseEntity<BudgetDTO> createBudget(@RequestBody BudgetDTO dto) {
 		/**Calls the service layer to create a 
@@ -58,7 +58,7 @@ public class BudgetController {
 		return ResponseEntity.ok(svc.retrieveBudgetByMonth(month));
 	}
 
-	@GetMapping("/summaries")
+	@GetMapping("/summary")
 	@Operation(summary = "Retrieve all budget records by year")
 	public ResponseEntity<List<SummaryDTO>> retrieveBudgetsByYear() {
 		/**Calls the service layer to fetch all budget records 
