@@ -75,7 +75,7 @@ export default function SummaryDashboard() {
                     <button className = "custom-btn" onClick = {() => navigate("/budgets/average")}>
                         Average
                     </button>
-                    <button onClick = {downloadExcel}>
+                    <button className = "custom-btn" onClick = {downloadExcel}>
                         Download
                     </button>
                     <button className = "custom-btn" onClick = {() => navigate("/home")}>

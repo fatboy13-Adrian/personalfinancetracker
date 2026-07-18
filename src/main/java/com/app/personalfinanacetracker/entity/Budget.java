@@ -100,4 +100,9 @@ public class Budget {
     @Builder.Default
     @Column(precision = 10, scale = 2)
     private BigDecimal savings = BigDecimal.ZERO;
+
+    //Calculate monthly overspent amount
+    @Builder.Default
+    @Column(precision = 10, scale = 2)
+    private BigDecimal overSpent = BigDecimal.ZERO;
 }

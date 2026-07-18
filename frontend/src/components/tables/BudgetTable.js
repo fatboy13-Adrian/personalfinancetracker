@@ -41,6 +41,7 @@ export default function BudgetTable({budgets = [], onUpdate, actionsDisabled}) {
                         <th>Medical</th>
                         <th>Misc</th>
                         <th>Savings</th>
+                        <th>Over Spent</th>
                     </tr>
                 </thead>
 
@@ -65,6 +66,7 @@ export default function BudgetTable({budgets = [], onUpdate, actionsDisabled}) {
                             <td>{formatMoney(budget.medical)}</td>
                             <td>{formatMoney(budget.misc)}</td>
                             <td>{formatMoney(budget.savings)}</td>
+                            <td>{formatMoney(budget.overSpent)}</td>
                         </tr>
                     ))}
                 </tbody>

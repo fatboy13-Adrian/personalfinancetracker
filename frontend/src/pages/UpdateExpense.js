@@ -9,7 +9,6 @@ import "../styles/pages/UpdateExpense.css";
 export default function UpdateExpense() {
     const navigate = useNavigate();
     const [searchDate, setSearchDate] = useState("");
-    const [expenseId, setExpenseId] = useState(null);
     const [expense, setExpense] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
@@ -93,7 +92,6 @@ export default function UpdateExpense() {
             const res = await axios.get(`http://localhost:8080/expenses/date/${searchDate}`);
             const data = Array.isArray(res.data) ? res.data[0] : res.data;
             setExpense(data);
-            setExpenseId(data.id);
        } catch {
             setError("No record found for this date.");
        } finally {
@@ -106,7 +104,7 @@ export default function UpdateExpense() {
         setExpense((prev) => ({
             ...prev, [name]: value,
         }));
-   };
+    };
 
     const onSubmit = async (e) => {
         e.preventDefault();
@@ -114,25 +112,32 @@ export default function UpdateExpense() {
             setLoading(true);
             setError("");
             setSuccess(false);
+            const cleanIsoDate = searchDate.substring(0, 10);
+            const numericalFields = fieldGroups
+            .flatMap(g => g.fields)
+            .reduce((acc, f) => {
+                acc[f.name] = parseFloat(expense[f.name]) || 0;
+                return acc;
+            }, {});
+
             const payload = {
                 ...expense,
-                ...fieldGroups
-                    .flatMap(g => g.fields)
-                    .reduce((acc, f) => {
-                        acc[f.name] = parseFloat(expense[f.name]) || 0;
-                        return acc;
-                    }, {})
-           };
+                ...numericalFields,
+                date: cleanIsoDate
+            };
 
-            await axios.put(`http://localhost:8080/expenses/${expenseId}`, payload);
+            await axios.put(`http://localhost:8080/expenses/date/${cleanIsoDate}`, payload);
+            
             setSuccess(true);
             navigate("/expenses/retrieve");
-       } catch (err) {
-            setError(err.response?.data?.message || "Update failed");
-       } finally {
+        } catch (err) {
+            console.error(err);
+            const message = err.response?.data?.message || err.message || "Failed to update record.";
+            setError(message);
+        } finally {
             setLoading(false);
-       }
-   };
+        }
+    };
 
    const handleReset = () => {
     const resetValues = fieldGroups

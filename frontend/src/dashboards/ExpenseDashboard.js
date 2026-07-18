@@ -75,14 +75,14 @@ export default function ExpenseDashboard() {
                         <button className = "custom-btn" onClick={() => navigate("/expenses/create")}>
                             Create
                         </button>
+                        <button className = "custom-btn" onClick = {() => setSelectedMonth("")}>
+                            Retrieve
+                        </button>
                         <button className = "custom-btn" onClick={() => navigate("/expenses/update")}>
                             Update
                         </button>
                         <button className = "custom-btn" onClick = {handleResetToCurrentMonth}>
                             Current Month
-                        </button>
-                        <button className = "custom-btn" onClick = {() => setSelectedMonth("")}>
-                            Show All
                         </button>
                         <button className = "custom-btn" onClick={() => navigate("/expenses")}>
                             Expense

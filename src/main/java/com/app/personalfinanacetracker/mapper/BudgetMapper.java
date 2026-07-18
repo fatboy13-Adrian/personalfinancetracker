@@ -28,7 +28,8 @@ public class BudgetMapper {
         dto.setMedical(b.getMedical());
         dto.setMisc(b.getMisc());
         dto.setSavings(b.getSavings());
-
+        dto.setOverSpent(b.getOverSpent());
+        
         //Return DTO
         return dto;
     }

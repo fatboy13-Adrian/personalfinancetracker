@@ -80,7 +80,7 @@ export default function BudgetDashboard() {
                         <button className = "custom-btn" onClick = {() => setMonth("")}>
                             Clear Filter
                         </button>
-                        <button onClick = {downloadExcel}>
+                        <button className = "custom-btn" onClick = {downloadExcel}>
                             Download
                         </button>
                         <button className = "custom-btn" onClick = {() => navigate("/budgets")}>

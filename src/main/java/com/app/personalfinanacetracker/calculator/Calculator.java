@@ -102,27 +102,71 @@ public class Calculator {
 
         //Calculate savings after subtracting all expenses
         b.setSavings(calculateSavings(b));
+
+        b.setOverSpent(calculateOverSpent(b));
     }
 
     public BigDecimal calculateSavings(Budget b) {
         //Income subtract expenses
         return b.getIncome()
-                .subtract(b.getRetirement()
-                        .add(b.getInsurance())
-                        .add(b.getMobilePhone())
-                        .add(b.getInternet())
-                        .add(b.getUtilities())
-                        .add(b.getTax())
-                        .add(b.getMortgage())
-                        .add(b.getDebt())
-                        .add(b.getAllowancesForParents())
-                        .add(b.getTransport())
-                        .add(b.getFood())
-                        .add(b.getGroceries())
-                        .add(b.getHaircut())
-                        .add(b.getMedical())
-                        .add(b.getMisc())
-                );
+        .subtract(b.getRetirement()
+        .add(b.getInsurance())
+        .add(b.getMobilePhone())
+        .add(b.getInternet())
+        .add(b.getUtilities())
+        .add(b.getTax())
+        .add(b.getMortgage())
+        .add(b.getDebt())
+        .add(b.getAllowancesForParents())
+        .add(b.getTransport())
+        .add(b.getFood())
+        .add(b.getGroceries())
+        .add(b.getHaircut())
+        .add(b.getMedical())
+        .add(b.getMisc()));
+    }
+
+    public BigDecimal calculateOverSpent(Budget b) {
+        BigDecimal overSpent = BigDecimal.ZERO;
+
+        //Calculate monthly overspent amount
+        if (b.getTransport().compareTo(BigDecimal.valueOf(122.0)) > 0) {
+            overSpent = overSpent
+            .add(b.getTransport()
+            .subtract(BigDecimal.valueOf(122.0)));
+        }
+        
+        if (b.getFood().compareTo(BigDecimal.valueOf(500.0)) > 0) {
+            overSpent = overSpent
+            .add(b.getFood()
+            .subtract(BigDecimal.valueOf(500.0)));
+        }
+
+        if (b.getGroceries().compareTo(BigDecimal.valueOf(100.0)) > 0) {
+            overSpent = overSpent
+            .add(b.getGroceries()
+            .subtract(BigDecimal.valueOf(100.0)));
+        }
+
+        if (b.getHaircut().compareTo(BigDecimal.valueOf(15.0)) > 0) {
+            overSpent = overSpent
+            .add(b.getHaircut()
+            .subtract(BigDecimal.valueOf(15.0)));
+        }
+
+        if (b.getMedical().compareTo(BigDecimal.valueOf(50.0)) > 0) {
+            overSpent = overSpent
+            .add(b.getMedical()
+            .subtract(BigDecimal.valueOf(50.0)));
+        }
+
+        if (b.getMisc().compareTo(BigDecimal.valueOf(600.0)) > 0) {
+            overSpent = overSpent
+            .add(b.getMisc()
+            .subtract(BigDecimal.valueOf(600.0)));
+        }
+
+        return overSpent;
     }
 
     public void calculateYearlyBudget(SummaryDTO dto, Budget b) {
@@ -143,7 +187,7 @@ public class Calculator {
         dto.setHaircut(dto.getHaircut().add(b.getHaircut()));
         dto.setMedical(dto.getMedical().add(b.getMedical()));
         dto.setMisc(dto.getMisc().add(b.getMisc()));
-        dto.setSavings(dto.getSavings().add(b.getSavings()));        
+        dto.setSavings(dto.getSavings().add(b.getSavings()));
     }
 
     public int calculateTotalNumberOfMonths() {

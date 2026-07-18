@@ -35,4 +35,5 @@ public class BudgetDTO {
     private BigDecimal medical = BigDecimal.ZERO;
     private BigDecimal misc = BigDecimal.ZERO;
     private BigDecimal savings = BigDecimal.ZERO;
+    private BigDecimal overSpent = BigDecimal.ZERO;
 }

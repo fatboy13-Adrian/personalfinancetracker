@@ -132,14 +132,14 @@ export default function UpdateBudget() {
                                 Create
                             </button>
                             <button type="button" className="button" onClick={() => navigate("/budgets/retrieve")}>
-                                View
+                                Retrieve
                             </button>
                             <Button type = "button" onClick = {handleReset} disabled = {loading || success}>
                                 Discard
                             </Button>
                              <button type = "submit" disabled = {loading}>
                                 {loading ? "Updating..." : "Save"}
-                            </button>S
+                            </button>
                             <button type="button" className="button" onClick={() => navigate("/budgets")}>
                                 Budget
                             </button>

@@ -93,7 +93,8 @@ public class ExportReportService {
                 "Haircut",
                 "Medical",
                 "Misc",
-                "Savings"
+                "Savings",
+                "Over Spent"
 			};
 
 			//Create header row at index 0
@@ -133,7 +134,8 @@ public class ExportReportService {
 					b.getHaircut(),
 					b.getMedical(),
 					b.getMisc(),
-                    b.getSavings()
+                    b.getSavings(),
+                    b.getOverSpent()
 				};
 
 				//Loop to create cells & apply $ format

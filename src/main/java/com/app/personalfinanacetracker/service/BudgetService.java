@@ -42,6 +42,8 @@ public class BudgetService {
 
         //Auto recalculate expense breakdown snapshot
         calculator.calculateMonthlyExpenses(b);
+        System.out.println("Overspent before save = " + b.getOverSpent());
+        calculator.calculateOverSpent(b);
 
         //Persist to DB
         Budget saved = repository.save(b);
@@ -143,6 +145,7 @@ public class BudgetService {
 
         createOrUpdateBudgetFields(existing, dto);
         calculator.calculateMonthlyExpenses(existing);
+        calculator.calculateOverSpent(existing);
         Budget updated = repository.save(existing);
         return mapper.toDTO(updated);
     }
@@ -177,6 +180,7 @@ public class BudgetService {
 
         //Auto recalculate expense breakdown snapshot
         calculator.calculateMonthlyExpenses(b);
+        calculator.calculateOverSpent(b);
 
         //Save updated record
         repository.save(b);
